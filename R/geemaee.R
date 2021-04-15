@@ -2,14 +2,13 @@
 #' @param y a vector specifying the outcome variable across all clusters
 #' @param X design matrix for the marginal mean model, including the intercept
 #' @param id a vector specifying cluster identifier
-#' @param n a vector of cluster sample sizes
 #' @param Z design matrix for the correlation model, should be all pairs j < k for each cluster
 #' @param family See corresponding documentation to \code{glm}. The current version only supports \code{'continuous'} and \code{'binomial'}
 #' @param maxiter maximum number of iterations for Fisher scoring updates
 #' @param epsilon tolerance for convergence. The default is 0.001
 #' @param printrange print details of range violations. The default is \code{TRUE}
 #' @param alpadj if \code{TRUE}, performs bias adjustment for the correlation estimating equations. The default is \code{FALSE}
-#' @param shrink method to tune step sizes in case of non-convergence including \code{"THETA"} or \code{"ALPHA"}. The default is \code{"ALPHA"}
+#' @param shrink method to tune step sizes in case of non-convergence including \code{'THETA'} or \code{'ALPHA'}. The default is \code{'ALPHA'}
 #' @param makevone if \code{TRUE}, it assumes unit variances for the correlation parameters in the correlation estimating equations. The default is \code{TRUE}
 #' @keywords cluster-randomized-trials generalized-estimating-equations matrix-adjusted-estimating-equations bias-corrected-sandwich-variance
 #' @author Hengshi Yu <hengshi@umich.edu>, Fan Li <fan.f.li@yale.edu>, Paul Rathouz <paul.rathouz@austin.utexas.edu>, Elizabeth L. Turner <liz.turner@duke.edu>, John Preisser <jpreisse@bios.unc.edu>
@@ -44,9 +43,7 @@
 #'
 #' Li, F. (2020). Design and analysis considerations for cohort stepped wedge cluster randomized trials with a decay correlation structure. Statistics in Medicine, 39(4), 438-455.
 #'
-#' Li, F., Yu, H., Rathouz, P., Turner, E. L., Preisser, J. S. (2020+). Marginal modeling of cluster period means and intraclass
-#' correlations in stepped wedge designs with binary outcomes. Under Revision at Biostatistics.
-#'
+#' Li, F., Yu, H., Rathouz, P., Turner, E. L., Preisser, J. S. (2021). Marginal modeling of cluster-period means and intraclass correlations in stepped wedge designs with binary outcomes. Biostatistics, kxaa056. 
 #' @export
 #' @examples
 #'
@@ -56,19 +53,22 @@
 #' ### function to create the design matrix for correlation parameters
 #' ### under the nested exchangeable correlation structure
 #' #################################################################
-#' CREATEZ_cross_sectional <- function(n, m, t){
-#'       Z <- NULL
-#'       for(i in 1:n){
-#'        alpha_0 = 1; alpha_1 = 2; n_i = c(m[i, ]); n_length = length(n_i)
-#'        POS = matrix(alpha_1, sum(n_i), sum(n_i))
-#'        loc1 = 0; loc2 = 0
-#'        for(s in 1:n_length){
-#'          n_t = n_i[s]; loc1 = loc2 + 1; loc2 = loc1 + n_t - 1
-#'          for(k in loc1:loc2){for(j in loc1:loc2){if(k != j){POS[k, j] = alpha_0
-#'            }else{POS[k, j] = 0}}}}
-#'        zrow <- diag(2); z_c<-NULL
-#'        for(j in 1:(sum(n_i) - 1)){for(k in (j+1):sum(n_i)){z_c<-rbind(z_c, zrow[POS[j,k],])}}
-#'        Z <- rbind(Z,z_c)}
+#' createzCrossSec = function (m) {
+#'       Z = NULL
+#'       n = dim(m)[1]
+#'       for (i in 1:n) {
+#'           alpha_0 = 1; alpha_1 = 2; n_i = c(m[i, ]); n_length = length(n_i)
+#'           POS = matrix(alpha_1, sum(n_i), sum(n_i))
+#'           loc1 = 0; loc2 = 0
+#'           for (s in 1:n_length) {
+#'               n_t = n_i[s]; loc1 = loc2 + 1; loc2 = loc1 + n_t - 1
+#'               for (k in loc1:loc2) {
+#'                   for (j in loc1:loc2) {
+#'                       if (k != j) {POS[k, j] = alpha_0} else {POS[k, j] = 0}}}}
+#'            zrow = diag(2); z_c = NULL
+#'            for (j in 1:(sum(n_i) - 1)) {
+#'                for (k in (j + 1):sum(n_i)) {z_c = rbind(z_c, zrow[POS[j,k],])}}
+#'            Z = rbind(Z, z_c)}
 #'       return(Z)}
 #'
 #' ########################################################################
@@ -84,10 +84,10 @@
 #' id = sampleSWCRT$id; period =  sampleSWCRT$period;
 #' X = as.matrix(sampleSWCRT[, c('period1', 'period2', 'period3', 'period4', 'treatment')])
 #'
-#' m = as.matrix(table(id, period)); n = dim(m)[1]; t = dim(m)[2]; clsize <- apply(m, 1, sum)
+#' m = as.matrix(table(id, period)); n = dim(m)[1]; t = dim(m)[2]; 
 #'
 #' ### design matrix for correlation parameters
-#' Z <- CREATEZ_cross_sectional(n, m, t)
+#' Z = createzCrossSec(m)
 #'
 #' ################################################################
 #' ### (1) Matrix-adjusted estimating equations and GEE
@@ -96,19 +96,19 @@
 #'
 #' ### MAEE
 #' est_maee_ind_con = geemaee(y = sampleSWCRT$y_con, X = X, id = id,
-#'                            n = clsize, Z = Z, family = "continuous",
+#'                            Z = Z, family = 'continuous',
 #'                            maxiter = 500, epsilon = 0.001,
 #'                            printrange = TRUE, alpadj = TRUE,
-#'                            shrink = "ALPHA", makevone = FALSE)
+#'                            shrink = 'ALPHA', makevone = FALSE)
 #' print(est_maee_ind_con)
 #' 
 #' 
 #' ### GEE
 #' est_uee_ind_con = geemaee(y = sampleSWCRT$y_con, X = X, id = id,
-#'                           n = clsize, Z = Z, family = "continuous",
+#'                           Z = Z, family = 'continuous',
 #'                           maxiter = 500, epsilon = 0.001,
 #'                           printrange = TRUE, alpadj = FALSE,
-#'                           shrink = "ALPHA", makevone = FALSE)
+#'                           shrink = 'ALPHA', makevone = FALSE)
 #' print(est_uee_ind_con)
 #' 
 #'
@@ -119,19 +119,19 @@
 #'
 #' ### MAEE
 #' est_maee_ind_bin = geemaee(y = sampleSWCRT$y_bin, X = X, id = id,
-#'                            n = clsize, Z = Z, family = "binomial",
+#'                            Z = Z, family = 'binomial',
 #'                            maxiter = 500, epsilon = 0.001,
 #'                            printrange = TRUE, alpadj = TRUE,
-#'                            shrink = "ALPHA", makevone = FALSE)
+#'                            shrink = 'ALPHA', makevone = FALSE)
 #' print(est_maee_ind_bin)
 #' 
 #' 
 #' ### GEE
 #' est_uee_ind_bin = geemaee(y = sampleSWCRT$y_bin, X = X, id = id,
-#'                           n = clsize, Z = Z, family = "binomial",
+#'                           Z = Z, family = 'binomial',
 #'                           maxiter = 500, epsilon = 0.001,
 #'                           printrange = TRUE, alpadj = FALSE,
-#'                           shrink = "ALPHA", makevone = FALSE)
+#'                           shrink = 'ALPHA', makevone = FALSE)
 #' print(est_uee_ind_bin)
 #' 
 #' 
@@ -150,10 +150,10 @@
 #' id = sampleSWCRT$id; period =  sampleSWCRT$period;
 #' X = as.matrix(sampleSWCRT[, c('period1', 'period2', 'period3', 'period4', 'period5', 'treatment')])
 #'
-#' m = as.matrix(table(id, period)); n = dim(m)[1]; t = dim(m)[2]; clsize <- apply(m, 1, sum)
+#' m = as.matrix(table(id, period)); n = dim(m)[1]; t = dim(m)[2]; 
 #'
 #' ### design matrix for correlation parameters
-#' Z <- CREATEZ_cross_sectional(n, m, t)
+#' Z = createzCrossSec(m)
 #'
 #' ################################################################
 #' ### (1) Matrix-adjusted estimating equations and GEE
@@ -162,19 +162,19 @@
 #'
 #' ### MAEE
 #' est_maee_ind_con = geemaee(y = sampleSWCRT$y_con, X = X, id = id,
-#'                            n = clsize, Z = Z, family = "continuous",
+#'                            Z = Z, family = 'continuous',
 #'                            maxiter = 500, epsilon = 0.001,
 #'                            printrange = TRUE, alpadj = TRUE,
-#'                            shrink = "ALPHA", makevone = FALSE)
+#'                            shrink = 'ALPHA', makevone = FALSE)
 #' print(est_maee_ind_con)
 #' 
 #' 
 #' ### GEE
 #' est_uee_ind_con = geemaee(y = sampleSWCRT$y_con, X = X, id = id,
-#'                           n = clsize, Z = Z, family = "continuous",
+#'                           Z = Z, family = 'continuous',
 #'                           maxiter = 500, epsilon = 0.001,
 #'                           printrange = TRUE, alpadj = FALSE,
-#'                           shrink = "ALPHA", makevone = FALSE)
+#'                           shrink = 'ALPHA', makevone = FALSE)
 #' print(est_uee_ind_con)
 #'
 #' ###############################################################
@@ -184,19 +184,19 @@
 #'
 #' ### MAEE
 #' est_maee_ind_bin = geemaee(y = sampleSWCRT$y_bin, X = X, id = id,
-#'                            n = clsize, Z = Z, family = "binomial",
+#'                            Z = Z, family = 'binomial',
 #'                            maxiter = 500, epsilon = 0.001,
 #'                            printrange = TRUE, alpadj = TRUE,
-#'                            shrink = "ALPHA", makevone = FALSE)
+#'                            shrink = 'ALPHA', makevone = FALSE)
 #' print(est_maee_ind_bin)
 #' 
 #' 
 #' ### GEE
 #' est_uee_ind_bin = geemaee(y = sampleSWCRT$y_bin, X = X, id = id,
-#'                           n = clsize, Z = Z, family = "binomial",
+#'                           Z = Z, family = 'binomial',
 #'                           maxiter = 500, epsilon = 0.001,
 #'                           printrange = TRUE, alpadj = FALSE,
-#'                           shrink = "ALPHA", makevone = FALSE)
+#'                           shrink = 'ALPHA', makevone = FALSE)
 #' print(est_uee_ind_bin)
 #' 
 #' }
@@ -230,11 +230,18 @@
 #' @return \code{niter} number of iterations used in the Fisher scoring updates for model fitting
 
 
-geemaee <- function(y, X, id, n, Z, family, maxiter = 500, epsilon = 0.001, printrange = TRUE, alpadj = FALSE, shrink = "ALPHA", makevone = TRUE)
-{
-  if(family == "continuous"){
-    contMAEE(y, X, id, n, Z, maxiter, epsilon, printrange, alpadj, shrink, makevone)
-  }else if(family == "binomial"){
-    binMAEE(y, X, id, n, Z, maxiter, epsilon, printrange, alpadj, shrink, makevone)
-  }
+geemaee = function(y, X, id, Z, family, maxiter = 500, epsilon = 0.001, 
+    printrange = TRUE, alpadj = FALSE, shrink = "ALPHA", makevone = TRUE) {
+
+    if (family == "continuous") {
+
+        contMAEE(y, X, id, Z, maxiter, epsilon, printrange, alpadj, 
+            shrink, makevone)
+
+    } else if (family == "binomial") {
+
+        binMAEE(y, X, id, Z, maxiter, epsilon, printrange, alpadj, 
+            shrink, makevone)
+
+    }
 }
