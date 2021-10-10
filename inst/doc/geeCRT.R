@@ -52,7 +52,7 @@ m = as.matrix(table(id, period)); n = dim(m)[1]; t = dim(m)[2]
 Z = createzCrossSec(m) 
 
 ### (1) Matrix-adjusted estimating equations and GEE 
-### on continous outcome with nested exchangeable correlation structure
+### on continuous outcome with nested exchangeable correlation structure
  
 ### MAEE
 est_maee_ind_con = geemaee(y = sampleSWCRT$y_con, 
@@ -89,7 +89,6 @@ est_uee_ind_bin = geemaee(y = sampleSWCRT$y_bin,
                           maxiter = 500, epsilon = 0.001, 
                           printrange = TRUE, alpadj = FALSE, 
                           shrink = "ALPHA", makevone = FALSE)
-
 
 ## ----set-options1, echo=FALSE, fig.keep="all", fig.width = 7, fig.height=4------------------------
 options(width = 100)
