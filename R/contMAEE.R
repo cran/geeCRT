@@ -371,7 +371,11 @@ contMAEE = function(y, X, id, Z, maxiter, epsilon, printrange, alpadj,
         evals2 = eigenRES2$values
         evecs2 = eigenRES2$vectors
         sqrevals2 = sqrt(evals2)
-        sqe2 = evecs2 %*% diag(sqrevals2)
+        if (length(sqrevals2) == 1) {
+            sqe2 = evecs2 %*% sqrevals2
+        } else {
+            sqe2 = evecs2 %*% diag(sqrevals2)
+        }
 
         # Bias-corrected variance
         Ustar_c_array = UUtran_c_array = array(0, c(p + q, p + q,
@@ -707,11 +711,19 @@ contMAEE = function(y, X, id, Z, maxiter, epsilon, printrange, alpadj,
         bSEBC3 = sqrt(diag(varFG[1:p, 1:p]))
 
         alpha_numbers = as.matrix(seq(1:q)) - 1
-        aSEBC0 = sqrt(diag(robust[(p + 1):(p + q), (p + 1):(p +
-            q)]))
-        aSEBC1 = sqrt(diag(varKC[(p + 1):(p + q), (p + 1):(p + q)]))
-        aSEBC2 = sqrt(diag(varMD[(p + 1):(p + q), (p + 1):(p + q)]))
-        aSEBC3 = sqrt(diag(varFG[(p + 1):(p + q), (p + 1):(p + q)]))
+        if (q == 1) {
+            aSEBC0 = sqrt(robust[(p + 1):(p + q), (p + 1):(p + q)])
+            aSEBC1 = sqrt(varKC[(p + 1):(p + q), (p + 1):(p + q)])
+            aSEBC2 = sqrt(varMD[(p + 1):(p + q), (p + 1):(p + q)])
+            aSEBC3 = sqrt(varFG[(p + 1):(p + q), (p + 1):(p + q)])
+
+        } else {
+            # more than 1 correlation parameters
+            aSEBC0 = sqrt(diag(robust[(p + 1):(p + q), (p + 1):(p + q)]))
+            aSEBC1 = sqrt(diag(varKC[(p + 1):(p + q), (p + 1):(p + q)]))
+            aSEBC2 = sqrt(diag(varMD[(p + 1):(p + q), (p + 1):(p + q)]))
+            aSEBC3 = sqrt(diag(varFG[(p + 1):(p + q), (p + 1):(p + q)]))
+        }
 
         outbeta = cbind(beta_numbers, beta, bSE, bSEBC0, bSEBC1,
             bSEBC2, bSEBC3)

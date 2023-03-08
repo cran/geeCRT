@@ -297,7 +297,7 @@ cpgee_exc = function(y, X, id, m, family, maxiter, epsilon, printrange,
         return(list(beta = c(beta), Ustar = Ustar))
     }
 
-    ##################################################################################### MODULE: getalpha (getalpha0, getalpha1) updates values for
+    ##################################################################################### MODULE: getalpha (getalpha0) updates values for
     ##################################################################################### correlation parameters
 
     # INPUT alpdata0: dataset built for estimating alpha0 alpdata1:

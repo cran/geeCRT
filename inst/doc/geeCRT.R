@@ -8,6 +8,7 @@ knitr::kable(head(sampleSWCRTSmall))
 
 ## ----createz, fig.keep="all", fig.width = 7, fig.height=4---------------------
 
+# Z matrix for nested exchangeable correlation structure
 createzCrossSec = function (m) {
 
     Z = NULL
@@ -40,7 +41,9 @@ createzCrossSec = function (m) {
     return(Z)}
 
 ## ----geemaee_small, fig.keep="all", fig.width = 7, fig.height=4---------------
-
+########################################################################
+### Example 1): simulated SW-CRT with small cluster-period sizes (5~10)
+########################################################################
 sampleSWCRT = sampleSWCRTSmall
 
 ### Individual-level id, period, outcome, and design matrix
@@ -80,7 +83,6 @@ est_maee_ind_bin = geemaee(y = sampleSWCRT$y_bin,
                            maxiter = 500, epsilon = 0.001, 
                            printrange = TRUE, alpadj = TRUE, 
                            shrink = "ALPHA", makevone = FALSE)
-print(est_maee_ind_bin)
 
 ### GEE
 est_uee_ind_bin = geemaee(y = sampleSWCRT$y_bin, 
@@ -108,14 +110,85 @@ options(width = 100)
  print(est_uee_ind_bin)
 
 
+## ----geemaee_small_exc, fig.keep="all", fig.width = 7, fig.height=4-------------------------------
+
+sampleSWCRT = sampleSWCRTSmall
+
+### Individual-level id, period, outcome, and design matrix
+id = sampleSWCRT$id; period = sampleSWCRT$period;
+X = as.matrix(sampleSWCRT[, c('period1', 'period2', 'period3', 'period4', 'treatment')])
+m = as.matrix(table(id, period)); n = dim(m)[1]; t = dim(m)[2]
+
+### design matrix for correlation parameters (simple exchangeable correlation structure)
+Z = createzCrossSec(m) 
+Z = matrix(1, dim(Z)[1], 1)
+
+### (1) Matrix-adjusted estimating equations and GEE 
+### on continuous outcome with nested exchangeable correlation structure
+ 
+### MAEE
+est_maee_ind_con = geemaee(y = sampleSWCRT$y_con, 
+                           X = X, id  = id, Z = Z, 
+                           family = "continuous", 
+                           maxiter = 500, epsilon = 0.001, 
+                           printrange = TRUE, alpadj = TRUE, 
+                           shrink = "ALPHA", makevone = FALSE)
+
+### GEE
+est_uee_ind_con = geemaee(y = sampleSWCRT$y_con, 
+                          X = X, id = id, Z = Z, 
+                          family = "continuous", 
+                          maxiter = 500, epsilon = 0.001, 
+                          printrange = TRUE, alpadj = FALSE, 
+                          shrink = "ALPHA", makevone = FALSE)
+
+### (2) Matrix-adjusted estimating equations and GEE 
+### on binary outcome with nested exchangeable correlation structure
+
+### MAEE
+est_maee_ind_bin = geemaee(y = sampleSWCRT$y_bin, 
+                           X = X, id = id, Z = Z, 
+                           family = "binomial", 
+                           maxiter = 500, epsilon = 0.001, 
+                           printrange = TRUE, alpadj = TRUE, 
+                           shrink = "ALPHA", makevone = FALSE)
+
+
+### GEE
+est_uee_ind_bin = geemaee(y = sampleSWCRT$y_bin, 
+                          X = X, id = id, Z = Z, 
+                          family = "binomial", 
+                          maxiter = 500, epsilon = 0.001, 
+                          printrange = TRUE, alpadj = FALSE, 
+                          shrink = "ALPHA", makevone = FALSE)
+
+
+## ----set-options2, echo=FALSE, fig.keep="all", fig.width = 7, fig.height=4------------------------
+options(width = 100)
+ 
+
+## ---- fig.keep="all", fig.width = 7, fig.height=4-------------------------------------------------
+ # MAEE for continuous outcome
+ print(est_maee_ind_con)
+
+ # GEE for continuous outcome
+ print(est_uee_ind_con)
+ 
+ # MAEE for binary outcome
+ print(est_maee_ind_bin)
+ 
+ # GEE for binary outcome
+ print(est_uee_ind_bin)
+
+
 ## ---- echo=FALSE, results='asis'------------------------------------------------------------------
 knitr::kable(head(sampleSWCRTLarge))
 
 ## ----geemaee_large, fig.keep="all", fig.width = 7, fig.height=4-----------------------------------
-
 ########################################################################
 ### Example 2): simulated SW-CRT with larger cluster-period sizes (20~30)
 ########################################################################
+
 ## This will elapse longer. 
 sampleSWCRT = sampleSWCRTLarge
 
@@ -169,6 +242,246 @@ est_uee_ind_bin = geemaee(y = sampleSWCRT$y_bin,
 print(est_uee_ind_bin)
 
 
+
+## ----geemaee_large_exc, fig.keep="all", fig.width = 7, fig.height=4-------------------------------
+
+sampleSWCRT = sampleSWCRTLarge
+
+### Individual-level id, period, outcome, and design matrix
+id = sampleSWCRT$id; period =  sampleSWCRT$period;
+X = as.matrix(sampleSWCRT[, c('period1', 'period2', 'period3', 'period4', 'period5', 'treatment')])
+m = as.matrix(table(id, period)); n = dim(m)[1]; t = dim(m)[2]
+### design matrix for correlation parameters
+Z = createzCrossSec(m) 
+Z = matrix(1, dim(Z)[1], 1)
+
+### (1) Matrix-adjusted estimating equations and GEE 
+### on continous outcome with nested exchangeable correlation structure
+ 
+### MAEE
+est_maee_ind_con = geemaee(y = sampleSWCRT$y_con, 
+                           X = X, id  = id, Z = Z, 
+                           family = "continuous", 
+                           maxiter = 500, epsilon = 0.001, 
+                           printrange = TRUE, alpadj = TRUE, 
+                           shrink = "ALPHA", makevone = FALSE)
+print(est_maee_ind_con)
+
+### GEE
+est_uee_ind_con = geemaee(y = sampleSWCRT$y_con, 
+                          X = X, id = id, Z = Z, 
+                          family = "continuous", 
+                          maxiter = 500, epsilon = 0.001, 
+                          printrange = TRUE, alpadj = FALSE, 
+                          shrink = "ALPHA", makevone = FALSE)
+print(est_uee_ind_con)
+
+### (2) Matrix-adjusted estimating equations and GEE 
+### on binary outcome with nested exchangeable correlation structure
+
+### MAEE
+est_maee_ind_bin = geemaee(y = sampleSWCRT$y_bin, 
+                           X = X, id = id, Z = Z, 
+                           family = "binomial", 
+                           maxiter = 500, epsilon = 0.001, 
+                           printrange = TRUE, alpadj = TRUE, 
+                           shrink = "ALPHA", makevone = FALSE)
+print(est_maee_ind_bin)
+
+### GEE
+est_uee_ind_bin = geemaee(y = sampleSWCRT$y_bin, 
+                          X = X, id = id, Z = Z, 
+                          family = "binomial", 
+                          maxiter = 500, epsilon = 0.001, 
+                          printrange = TRUE, alpadj = FALSE, 
+                          shrink = "ALPHA", makevone = FALSE)
+print(est_uee_ind_bin)
+
+## ----geemaee_small_crt, fig.keep="all", fig.width = 7, fig.height=4-------------------------------
+### use only the second period data to get a general CRT data
+sampleSWCRT = sampleSWCRTSmall[sampleSWCRTSmall$period == 2, ] 
+
+### Individual-level id, period, outcome, and design matrix
+id = sampleSWCRT$id; period =  sampleSWCRT$period;
+X = as.matrix(sampleSWCRT[, c('period2', 'treatment')])
+m = as.matrix(table(id, period)); n = dim(m)[1]; t = dim(m)[2]
+
+### design matrix for correlation parameters
+Z = createzCrossSec(m)
+Z = matrix(1, dim(Z)[1], 1)
+
+### (1) Matrix-adjusted estimating equations and GEE 
+### on continuous outcome with nested exchangeable correlation structure
+ 
+### MAEE
+est_maee_ind_con = geemaee(y = sampleSWCRT$y_con, 
+                           X = X, id  = id, Z = Z, 
+                           family = "continuous", 
+                           maxiter = 500, epsilon = 0.001, 
+                           printrange = TRUE, alpadj = TRUE, 
+                           shrink = "ALPHA", makevone = FALSE)
+
+### GEE
+est_uee_ind_con = geemaee(y = sampleSWCRT$y_con, 
+                          X = X, id = id, Z = Z, 
+                          family = "continuous", 
+                          maxiter = 500, epsilon = 0.001, 
+                          printrange = TRUE, alpadj = FALSE, 
+                          shrink = "ALPHA", makevone = FALSE)
+
+### (2) Matrix-adjusted estimating equations and GEE 
+### on binary outcome with nested exchangeable correlation structure
+
+### MAEE
+est_maee_ind_bin = geemaee(y = sampleSWCRT$y_bin, 
+                           X = X, id = id, Z = Z, 
+                           family = "binomial", 
+                           maxiter = 500, epsilon = 0.001, 
+                           printrange = TRUE, alpadj = TRUE, 
+                           shrink = "ALPHA", makevone = FALSE)
+
+### GEE
+est_uee_ind_bin = geemaee(y = sampleSWCRT$y_bin, 
+                          X = X, id = id, Z = Z, 
+                          family = "binomial", 
+                          maxiter = 500, epsilon = 0.001, 
+                          printrange = TRUE, alpadj = FALSE, 
+                          shrink = "ALPHA", makevone = FALSE)
+
+## ----set-options3, echo=FALSE, fig.keep="all", fig.width = 7, fig.height=4------------------------
+options(width = 100)
+ 
+
+## ---- fig.keep="all", fig.width = 7, fig.height=4-------------------------------------------------
+ # MAEE for continuous outcome
+ print(est_maee_ind_con)
+
+ # GEE for continuous outcome
+ print(est_uee_ind_con)
+ 
+ # MAEE for binary outcome
+ print(est_maee_ind_bin)
+ 
+ # GEE for binary outcome
+ print(est_uee_ind_bin)
+
+
+## ----geemaee_large_crt, fig.keep="all", fig.width = 7, fig.height=4-------------------------------
+
+### use only the second period data to get a general CRT data
+sampleSWCRT = sampleSWCRTLarge[sampleSWCRTLarge$period == 2, ]
+
+### Individual-level id, period, outcome, and design matrix
+id = sampleSWCRT$id; period =  sampleSWCRT$period;
+X = as.matrix(sampleSWCRT[, c('period2', 'treatment')])
+m = as.matrix(table(id, period)); n = dim(m)[1]; t = dim(m)[2]
+### design matrix for correlation parameters
+Z = createzCrossSec(m) 
+Z = matrix(1, dim(Z)[1], 1)
+
+### (1) Matrix-adjusted estimating equations and GEE 
+### on continous outcome with nested exchangeable correlation structure
+ 
+### MAEE
+est_maee_ind_con = geemaee(y = sampleSWCRT$y_con, 
+                           X = X, id  = id, Z = Z, 
+                           family = "continuous", 
+                           maxiter = 500, epsilon = 0.001, 
+                           printrange = TRUE, alpadj = TRUE, 
+                           shrink = "ALPHA", makevone = FALSE)
+print(est_maee_ind_con)
+
+### GEE
+est_uee_ind_con = geemaee(y = sampleSWCRT$y_con, 
+                          X = X, id = id, Z = Z, 
+                          family = "continuous", 
+                          maxiter = 500, epsilon = 0.001, 
+                          printrange = TRUE, alpadj = FALSE, 
+                          shrink = "ALPHA", makevone = FALSE)
+print(est_uee_ind_con)
+
+### (2) Matrix-adjusted estimating equations and GEE 
+### on binary outcome with nested exchangeable correlation structure
+
+### MAEE
+est_maee_ind_bin = geemaee(y = sampleSWCRT$y_bin, 
+                           X = X, id = id, Z = Z, 
+                           family = "binomial", 
+                           maxiter = 500, epsilon = 0.001, 
+                           printrange = TRUE, alpadj = TRUE, 
+                           shrink = "ALPHA", makevone = FALSE)
+print(est_maee_ind_bin)
+
+### GEE
+est_uee_ind_bin = geemaee(y = sampleSWCRT$y_bin, 
+                          X = X, id = id, Z = Z, 
+                          family = "binomial", 
+                          maxiter = 500, epsilon = 0.001, 
+                          printrange = TRUE, alpadj = FALSE, 
+                          shrink = "ALPHA", makevone = FALSE)
+print(est_uee_ind_bin)
+
+## ----geemaee_large_cpsize1, fig.keep="all", fig.width = 7, fig.height=4---------------------------
+### Simulated dataset with 12 clusters and 5 periods
+# use the first observation for each cluster-period combination
+sampleSWCRT = NULL
+for (i in 1:12) {
+  for (j in 1:5) {
+    row = sampleSWCRTLarge[sampleSWCRTLarge$id == i & 
+                             sampleSWCRTLarge$period == j, ][1, , drop = FALSE]
+    sampleSWCRT  = rbind(sampleSWCRT, row)
+  }
+}
+
+### Individual-level id, period, outcome, and design matrix
+id = sampleSWCRT$id; period =  sampleSWCRT$period;
+X = as.matrix(sampleSWCRT[, c('period2', 'treatment')])
+m = as.matrix(table(id, period)); n = dim(m)[1]; t = dim(m)[2]
+### design matrix for correlation parameters
+Z = createzCrossSec(m) 
+Z = matrix(1, dim(Z)[1], 1)
+
+### (1) Matrix-adjusted estimating equations and GEE 
+### on continous outcome with nested exchangeable correlation structure
+ 
+### MAEE
+est_maee_ind_con = geemaee(y = sampleSWCRT$y_con, 
+                           X = X, id  = id, Z = Z, 
+                           family = "continuous", 
+                           maxiter = 500, epsilon = 0.001, 
+                           printrange = TRUE, alpadj = TRUE, 
+                           shrink = "ALPHA", makevone = FALSE)
+print(est_maee_ind_con)
+
+### GEE
+est_uee_ind_con = geemaee(y = sampleSWCRT$y_con, 
+                          X = X, id = id, Z = Z, 
+                          family = "continuous", 
+                          maxiter = 500, epsilon = 0.001, 
+                          printrange = TRUE, alpadj = FALSE, 
+                          shrink = "ALPHA", makevone = FALSE)
+print(est_uee_ind_con)
+
+### (2) Matrix-adjusted estimating equations and GEE 
+### on binary outcome with nested exchangeable correlation structure
+
+### MAEE
+est_maee_ind_bin = geemaee(y = sampleSWCRT$y_bin, 
+                           X = X, id = id, Z = Z, 
+                           family = "binomial", 
+                           maxiter = 500, epsilon = 0.001, 
+                           printrange = TRUE, alpadj = TRUE, 
+                           shrink = "ALPHA", makevone = FALSE)
+print(est_maee_ind_bin)
+
+### GEE
+est_uee_ind_bin = geemaee(y = sampleSWCRT$y_bin, 
+                          X = X, id = id, Z = Z, 
+                          family = "binomial", 
+                          maxiter = 500, epsilon = 0.001, 
+                          printrange = TRUE, alpadj = FALSE, 
+                          shrink = "ALPHA", makevone = FALSE)
+print(est_uee_ind_bin)
 
 ## ----cpgee_gather_small, fig.keep="all", fig.width = 7, fig.height=4------------------------------
 
