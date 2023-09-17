@@ -1,8 +1,8 @@
 Package: geeCRT
 Type: Package
 Title: Bias-Corrected GEE for Cluster Randomized Trials
-Version: 1.1.0
-Date: 2023-03-07
+Version: 1.1.1
+Date: 2023-09-16
 Authors@R: c(person(given = "Hengshi", family = "Yu", role = c("aut", "cre"), 
              email="hengshi@umich.edu"), 
              person(given = "Fan", family = "Li", role ="aut", 
@@ -37,11 +37,11 @@ VignetteBuilder: knitr
 RoxygenNote: 7.2.3
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2023-03-08 06:28:20 UTC; hengshiyu
+Packaged: 2023-09-16 23:09:52 UTC; hengshiyu
 Author: Hengshi Yu [aut, cre],
   Fan Li [aut],
   Paul Rathouz [aut],
   Elizabeth L. Turner [aut],
   John Preisser [aut]
 Repository: CRAN
-Date/Publication: 2023-03-08 08:50:06 UTC
+Date/Publication: 2023-09-17 00:10:02 UTC

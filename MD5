@@ -1,4 +1,4 @@
-4f804db2bd51cba7a9f70725f2930aa9 *DESCRIPTION
+7fb36c3d2f0be93d2c3f6dfeeb661de4 *DESCRIPTION
 652f495adc2ffcca0e980a871bd0f6f5 *NAMESPACE
 20ae1c72c27679a89211c2c476f3f1b0 *R/binMAEE.R
 18624408b637139ba5b103084d9d6472 *R/contMAEE.R
@@ -6,7 +6,7 @@ be5d8698a01115863096062eafd7a7c7 *R/cpgeeSWD.R
 a0eb669e93f3a01bbe67aa62e518e8ae *R/cpgee_ed.R
 ce18cfed77c9962f48a233c1707c41c5 *R/cpgee_exc.R
 e0fe0d55a270791d0d41a161b47d4fc7 *R/cpgee_nex.R
-8cdfbc8ce2d789bcb6446d216dbcb1ef *R/geeCRT_package.R
+9e41800fd04a8c53fe9dc41275cd5f59 *R/geeCRT_package.R
 17e06d52a4197914b9765c616d0415cf *R/geemaee.R
 3e0227ec435a75c831b377b86b11356a *R/print_cpgeeSWD.R
 23cfe1ad694c2b6c5a47a6a19b6503c5 *R/print_geemaee.R
@@ -19,9 +19,9 @@ b32d43ce932d963f573e4295a61668d5 *R/simbinCLF.R
 1bef659e0da60a87ccb2158392a77466 *data/sampleSWCRTSmall.rda
 8177fa74806539eef002600b9b6c2a5e *inst/doc/geeCRT.R
 bab63eb2eeba00387f5b3445328db8e3 *inst/doc/geeCRT.Rmd
-f0b8baa2fdbe9d0601ad7ac3ae1da0c1 *inst/doc/geeCRT.html
+75dd67ea7ea05e84a07d2c12c1d5aeb8 *inst/doc/geeCRT.html
 7e31e3e54c68965b767e31a2b9a7ebf8 *man/cpgeeSWD.Rd
-2d5dff1dafd36c03cf13b0bc75c11eff *man/geeCRT.Rd
+d670f59aa541aafb00577742de97dc26 *man/geeCRT.Rd
 ac6ef494a91fa534b561c836198e7ff3 *man/geemaee.Rd
 3f20c6aa7b65be544028340ba566e377 *man/print.cpgeeSWD.Rd
 015c04b5fd994ba933d78589f14fcc26 *man/print.geemaee.Rd
