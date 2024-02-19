@@ -1,6 +1,6 @@
-# geeCRT 1.1.2
+# geeCRT 1.1.3
 
 ## Major changes
 
-1. incorporated the case with only 1 observation for a cluster for individual GEE functions
-2. refactored the geemaee related functions
+1. added count outcome type for the geemaee() function
+2. added more link function choices for different outcome types
